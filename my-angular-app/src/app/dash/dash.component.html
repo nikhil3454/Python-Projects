@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+<body>
+
+  <mat-tab-group>  
+    <!-- Sales Dashboard Tab -->
+    <mat-tab label="Sales" > 
+      <h1>Dashboard</h1>
+
+      <div class="mini-card">
+        <mat-card class="Date">
+          <mat-card-title>Date Range</mat-card-title>
+          <mat-card-content>
+            <mat-form-field appearance="fill">
+              <mat-label>Enter a date range</mat-label>
+              <mat-date-range-input [rangePicker]="picker1">
+                <input matStartDate placeholder="Start date" [(ngModel)]="startDate1">
+                <input matEndDate placeholder="End date" [(ngModel)]="endDate1">
+              </mat-date-range-input>
+              <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+              <mat-date-range-picker #picker1></mat-date-range-picker>
+            </mat-form-field>
+            <button mat-raised-button color="primary" (click)="fetchData()">Submit</button>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card >
+          <mat-card-title>Total Sales</mat-card-title>
+          <mat-card-content>
+            <h2>{{ totalSales1 | currency:'INR' }}</h2>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card >
+          <mat-card-title>Monthly Average Sales</mat-card-title>
+          <mat-card-content>
+            <h2>{{ monthlyAverageSales | currency: 'INR' }}</h2>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="grid-container">
+        <mat-card>
+          <mat-card-title>Monthly Sales</mat-card-title>
+          <div echarts [options]="chartOptions1" class="chart-container"></div>
+        </mat-card>
+
+        <mat-card>
+          <mat-card-title>Total Products</mat-card-title>
+          <div echarts [options]="barChartOptions1" class="chart-container"></div>
+        </mat-card>
+
+        <mat-card>
+          <mat-card-title>Popular Products</mat-card-title>
+          <div echarts [options]="pieChartOptions1" class="chart-container"></div>
+        </mat-card>
+
+        <mat-card>  
+          <mat-card-header>  
+            <mat-card-title>Sales Data</mat-card-title>  
+          </mat-card-header>  
+          <mat-card-content>
+            <table mat-table [dataSource]="dataSource1" matSort class="mat-elevation-z8">
+              <!-- Month Column -->
+              <ng-container matColumnDef="month">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Month </th>
+                <td mat-cell *matCellDef="let element"> {{ element.month }} </td>
+              </ng-container>
+            
+              <!-- Item Column -->
+              <ng-container matColumnDef="item">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Item </th>
+                <td mat-cell *matCellDef="let element"> {{ element.item }} </td>
+              </ng-container>
+
+              <!-- Quantity Column -->
+              <ng-container matColumnDef="quantity">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Quantity </th>
+                <td mat-cell *matCellDef="let element"> {{ element.quantity }} </td>
+              </ng-container>
+            
+              <!-- Price Column -->
+              <ng-container matColumnDef="price">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Price </th>
+                <td mat-cell *matCellDef="let element"> {{ element.price }} </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns1"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns1;"></tr>
+            </table>
+            <mat-paginator [pageSizeOptions]="[5, 10]" showFirstLastButtons  #paginator1></mat-paginator>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- Customer Dashboard Tab -->
+    <mat-tab label="Customer" >
+      <h1>Customer Dashboard</h1>
+      <div class="mini-card">
+      <mat-card>
+        <mat-card-title>Select Customer Data</mat-card-title>
+        <mat-card-content>
+            <!-- Year Picker -->
+            <mat-form-field appearance="outline">
+              <mat-label>Select Year</mat-label>
+              <input matInput [matDatepicker]="yearPicker" [formControl]="yearControl">
+              <mat-datepicker-toggle matSuffix [for]="yearPicker"></mat-datepicker-toggle>
+              <mat-datepicker #yearPicker startView="multi-year" 
+                              (yearSelected)="chosenYearHandler($event, yearPicker)">
+              </mat-datepicker>
+            </mat-form-field>
+
+            <!-- Customer Dropdown -->
+            <mat-form-field appearance="outline">
+              <mat-label>Select Customer</mat-label>
+              <mat-select [formControl]="selectedKeyControl" (selectionChange)="onSelectionChange($event)">
+                <mat-option *ngFor="let key of predefinedKeys" [value]="key">
+                  {{ key }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" (click)="fetchData2()">Submit</button>
+        </mat-card-content>
+      </mat-card>
+      <mat-card>
+        <mat-card-title>Total Revenue</mat-card-title>
+        <mat-card-content>
+          <h2>{{ totalRevenue | currency:'INR' }}</h2>
+        </mat-card-content>
+      </mat-card>
+      </div>
+    
+
+      <div class="grid-container">
+        <mat-card>
+          <mat-card-title> Revenue generated by customers </mat-card-title>
+          <div echarts [options]="chartOptions2" class="chart-container"></div>
+        </mat-card>  
+        <mat-card>
+          <mat-card-header>
+          <mat-card-title>Customer Data</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+              <table mat-table [dataSource]="dataSource2" matSort class="mat-elevation-z8">
+                <!-- Month Column -->
+                <ng-container matColumnDef="month">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Month </th>
+                  <td mat-cell *matCellDef="let element"> {{ element.month }} </td>
+                </ng-container>
+          
+                <!-- Item Column -->
+                <ng-container matColumnDef="item">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Item </th>
+                  <td mat-cell *matCellDef="let element"> {{ element.item }} </td>
+                </ng-container>
+          
+                <!-- Price Column -->
+                <ng-container matColumnDef="price">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Price </th>
+                  <td mat-cell *matCellDef="let element"> ₹{{ element.price | number:'1.2-2' }} </td>
+                </ng-container>
+          
+                <!-- Quantity Column -->
+                <ng-container matColumnDef="quantity">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Quantity </th>
+                  <td mat-cell *matCellDef="let element"> {{ element.quantity }} </td>
+                </ng-container>
+          
+                <!-- Table Header & Rows -->
+                <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
+                <tr mat-row *matRowDef="let rowhatw; columns: displayedColumns2;"></tr>
+              </table>
+            <mat-paginator [pageSizeOptions]="[5, 10]" showFirstLastButtons #paginator2 ></mat-paginator>
+          </mat-card-content>
+          </mat-card>
+        </div>
+          
+    </mat-tab>
+    <mat-tab label="purchase">
+      <h1>Purchase Dashboard</h1>
+      <div class="mini-card">
+      <mat-card>
+      <mat-card-content>
+        <mat-form-field appearance="fill">
+          <mat-label>Enter a date range</mat-label>
+          <mat-date-range-input [rangePicker]="picker2">
+            <input matStartDate placeholder="Start date" [(ngModel)]="startDate2">
+            <input matEndDate placeholder="End date" [(ngModel)]="endDate2">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker2></mat-date-range-picker>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)='fetchData3()'>Submit</button>
+      </mat-card-content>
+    </mat-card>
+        <mat-card>
+          <mat-card-title>Total Purchase</mat-card-title>
+          <mat-card-content>
+            <h2>{{totalPurchase | currency:'INR' }}</h2>
+          </mat-card-content>
+        </mat-card>
+        <mat-card>
+          <mat-card-title>Monthly Average Purchase</mat-card-title>
+          <mat-card-content>
+            <h2>{{monthlyAveragePurchase| currency:'INR'}}</h2>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <div class="grid-container">
+        <mat-card>
+        <mat-card-title>Monthly Purchase of Items</mat-card-title>
+          <div echarts [options]="chartOptions3" class="chart-container"></div>
+        </mat-card>
+        <mat-card>
+          <mat-card-title>Total Purchase done for Item name</mat-card-title>
+          <div echarts [options]="barChartOptions2" class="chart-container"></div>
+        </mat-card>
+        <mat-card>
+          <mat-card-title>Percentage of items in Purchase</mat-card-title>
+          <div echarts [options]="pieChartOptions2" class="chart-container"></div>
+        </mat-card>
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>Purchase Data Per Month</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <table mat-table [dataSource]="dataSource3" matSort class="mat-elevation-z8">
+              <ng-container matColumnDef="month">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Month </th>
+                <td mat-cell *matCellDef="let element"> {{ element.month }} </td>
+              </ng-container>
+        
+              <!-- Item Column -->
+              <ng-container matColumnDef="item">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Item </th>
+                <td mat-cell *matCellDef="let element"> {{ element.item }} </td>
+              </ng-container>
+        
+              <!-- Price Column -->
+              <ng-container matColumnDef="price">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Price </th>
+                <td mat-cell *matCellDef="let element"> ₹{{ element.price | number:'1.2-2' }} </td>
+              </ng-container>
+        
+              <!-- Quantity Column -->
+              <ng-container matColumnDef="quantity">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Quantity </th>
+                <td mat-cell *matCellDef="let element"> {{ element.quantity }} </td>
+              </ng-container>
+        
+              <!-- Table Header & Rows -->
+              <tr mat-header-row *matHeaderRowDef="displayedColumns3"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns3;"></tr>
+             </table>
+             <mat-paginator [pageSizeOptions]="[5, 10]" showFirstLastButtons #paginator3 ></mat-paginator> 
+          </mat-card-content>
+        </mat-card>
+
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+
+</body>
+</html>

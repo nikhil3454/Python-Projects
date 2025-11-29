@@ -1,0 +1,55 @@
+        .chart-container {
+            height: 400px;
+        };
+        .Date-range{
+            background-color:#D0D1E6;
+        }
+        .grid-container mat-card{
+            box-shadow: 2px 2px 2px 2px grey;
+            margin: 10px;
+        }
+    
+        .mini-card {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .mini-card mat-card {
+            width: 100%;
+            text-align: center;
+            box-shadow: 2px 2px 2px 2px grey;
+            margin: 10px;
+            
+        }
+        .table-container table {
+            margin-top: 20px;
+            width:100%;
+        }table {
+            width: 100%;
+
+          }
+          
+          th.mat-sort-header-sorted {
+            color: black;
+          }
+        mat-form-field{
+            width: 300px;
+            margin:10px
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .mini-card mat-card:hover {  
+            transform: translateY(-9px); /* Slight lift */  
+            box-shadow: 5px 5px 5px 5px rgba(0, 0, 0, 0.15); /* More pronounced shadow */  
+            transition: all 0.2s ease-in-out; /* Smooth transition for the effect */  
+          }  
+        .mat-card button:hover{
+            transform: translateY(-9px); /* Slight lift */  
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* More pronounced shadow */  
+            transition: all 0.2s ease-in-out; /* Smooth transition for the effect */  
+
+        }
+          
